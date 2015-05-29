@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Food Security in BC</title>
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    <style>
+        #map { width: 800px; height: 900px; }
+        body { font: 16px/1.4 "Helvetica Neue", Arial, sans-serif; }
+        .ghbtns { position: relative; top: 4px; margin-left: 5px; }
+        a { color: #0077ff; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- <script src="simpleheat.js"></script>
+<script src="HeatLayer.js"></script> -->
+
+<script src="leaflet-heat.js"></script>
+
+<script src="BCpopdensity2011.js"></script>
+<script>
+
+var map = L.map('map').setView([54.15,-126.55], 6);
+
+var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    attribution: '<a href="https://www.mapbox.com/about/maps/">Terms and Feedback</a>',
+    id: 'examples.map-20v6611k'
+}).addTo(map);
+
+var heat = L.heatLayer(popPoints).addTo(map);
+
+</script>
+</body>
+</html>
