@@ -11,7 +11,7 @@
     }
     t.prototype = {
         defaultRadius: 20,
-        defaultGradient: {.05: "#fff7ec", .1: "#fee8c8", .2: "#fdd49e", .35: "#fdbb84", .5: "#fc8d59", .7: "#ef6548", .9: "#b30000", 1: "#7f0000"
+        defaultGradient: {.05: "#fff7ec", .1: "#fee8c8", .2: "#fdd49e", .4: "#fdbb84", .6: "#fc8d59", .8: "#ef6548", .99: "#b30000", 1: "#7f0000"
         },
         data: function(t) {
             return this._data = t, this

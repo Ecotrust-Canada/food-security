@@ -4,6 +4,8 @@
     <title>Food Security in BC</title>
     <link rel="stylesheet" href="leaflet.css" />
     <script src="leaflet.js"></script>
+    <script src="d3.v3.min.js"></script>
+    <script src="L.D3SvgLeaflet.min.js"></script>
     <style>
         #map { width: 800px; height: 900px; }
         body { font: 16px/1.4 "Helvetica Neue", Arial, sans-serif; }
@@ -34,6 +36,32 @@ var heat = L.heatLayer(popPoints,{
     blur: 35,
     //maxZoom: 40,
 }).addTo(map);
+
+
+var stores = [];
+var storesOverlay = L.d3SvgOverlay(function(sel,proj){
+	
+  var storesUpd = sel.selectAll('circle').data(stores);
+  storesUpd.enter()
+    .append('circle')
+    .attr('r',20)
+    .attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).X;})
+    .attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).Y;})
+    .attr('stroke','none')
+    .attr('stroke-width',1)
+    .attr('fill','blue');
+});
+
+d3.csv("BC_Food.csv",function(data){
+    console.log(data.length);
+  stores = data.map(function(d){
+    d.latLng = [+d.X,+d.Y];
+    return d;
+  });
+  storesOverlay.addTo(map);
+});
+
+
 
 </script>
 </body>
