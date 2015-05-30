@@ -14,6 +14,15 @@
 </head>
 <body>
 
+<p>Use the buttons below to filter market types.</p>
+    <form action="">
+        <input type="checkbox" class="filter_button" name="food" value="supermarket" checked><b>Supermarkets and Other Grocery Stores</b><br>
+        <input type="checkbox" class="filter_button" name="food" value="produce" checked><b>Fresh Produce Stores</b><br>
+        <input type="checkbox" class="filter_button" name="food" value="meat" checked><b>Meat and Specialty Food Stores</b><br>
+        <input type="checkbox" class="filter_button" name="food" value="convenience" checked><b>Convenience Stores</b><br>
+        <input type="checkbox" class="filter_button" name="food" value="gas"><b>Gas Stations</b><br>
+    </form>
+
 <div id="map"></div>
 
 <!-- <script src="simpleheat.js"></script>
@@ -39,7 +48,8 @@ var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
 var heat = L.heatLayer(popPoints,{
     radius: 25,
     blur: 35,
-    //maxZoom: 40,
+    opacity: 0.5,
+    //maxZoom: 4,
 }).addTo(map);
 
 
@@ -49,10 +59,12 @@ var storesOverlay = L.d3SvgOverlay(function(sel,proj){
   var storesUpd = sel.selectAll('circle').data(stores);
   storesUpd.enter()
     .append('circle')
-    .attr('r',5)
+    .attr('r',0.5)
     .attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
     .attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
     .attr('fill','blue')
+    .attr('opacity',0.3)
+    .attr('class','node')
     .append("svg:title")
       .text(function(d) { return toTitleCase(d.NAME); });
 });
@@ -66,6 +78,21 @@ d3.csv("BC_Food.csv",function(data){
   storesOverlay.addTo(map);
 });
 
+
+d3.selectAll("input[value=supermarket]").on("change", supermarket);
+
+
+function supermarket() {
+    if (this.value === "checked") show_supermarket();
+    if (this.value === "unchecked") hide_supermarket();
+}
+
+
+function hide_supermarket() {
+    var t = storesOverlay.transition().duration(1550),
+        g = t.selectAll(".circle");
+    g.selectAll("circle").attr("r", function(d) { return d.FOOD_TYPE == "Supermarkets and Other Grocery Stores" ? null : "none"; });
+}
 
 
 </script>
