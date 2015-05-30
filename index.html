@@ -59,12 +59,7 @@ var storesOverlay = L.d3SvgOverlay(function(sel,proj){
   var storesUpd = sel.selectAll('circle').data(stores);
   storesUpd.enter()
     .append('circle')
-<<<<<<< HEAD
     .attr('r',0.5)
-=======
-    .attr('r',18)
-    .attr('opacity',.1)
->>>>>>> 456a88bd5b2186986de947ea41fb35485446779f
     .attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
     .attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
     .attr('fill','blue')
