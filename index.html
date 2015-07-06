@@ -10,7 +10,20 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>Food Security by Ecotrust-Canada</title>
+    <link rel="stylesheet" href="stylesheets/leaflet.css" />
+    <script src="javascripts/leaflet.js"></script>
+    <script src="javascripts/d3.v3.min.js"></script>
+    <script src="javascripts/L.D3SvgLeaflet.min.js"></script>
+    <!-- <script src="javascripts/simpleheat.js"></script>
+    <script src="javascripts/HeatLayer.js"></script> -->
+    <script src="javascripts/leaflet-heat.js"></script>
+    <script src="javascripts/BCpopdensity2011.js"></script>
+    <style>
+        #map { width: 800px; height: 900px; }
+        body { font: 16px/1.4 "Helvetica Neue", Arial, sans-serif; }
+        a { color: #0077ff; }
+    </style>
+    <title>Food Security in BC</title>
   </head>
 
   <body>
@@ -22,16 +35,10 @@
           <h2>Mapping food security throughout BC</h2>
         </header>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/Ecotrust-Canada/food-security/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/Ecotrust-Canada/food-security/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/Ecotrust-Canada/food-security" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
         <hr>
 
         <section id="main_content">
-          <p>Mapping food security throughout BC</p>
+          <div id="map"></div>
         </section>
 
         <footer>
@@ -42,5 +49,70 @@
         
       </div>
     </div>
+    
+<script>
+
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+
+var map = L.map('map').setView([54.15,-126.55], 6);
+
+var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    attribution: '<a href="https://www.mapbox.com/about/maps/">Terms and Feedback</a>',
+    id: 'examples.map-20v6611k'
+}).addTo(map);
+
+var heat = L.heatLayer(popPoints,{
+    radius: 25,
+    blur: 35,
+    opacity: 0.5,
+    //maxZoom: 4,
+}).addTo(map);
+
+
+var stores = [];
+var storesOverlay = L.d3SvgOverlay(function(sel,proj){
+	
+  var storesUpd = sel.selectAll('circle').data(stores);
+  storesUpd.enter()
+    .append('circle')
+    .attr('r',0.5)
+    .attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
+    .attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
+    .attr('fill','blue')
+    .attr('opacity',0.3)
+    .attr('class','node')
+    .append("svg:title")
+      .text(function(d) { return toTitleCase(d.NAME); });
+});
+
+d3.csv("BC_Food.csv",function(data){
+    console.log(data.length);
+  stores = data.map(function(d){
+    d.latLng = [+d.lat,+d.lng];
+    return d;
+  });
+  storesOverlay.addTo(map);
+});
+
+
+d3.selectAll("input[value=supermarket]").on("change", supermarket);
+
+
+function supermarket() {
+    if (this.value === "checked") show_supermarket();
+    if (this.value === "unchecked") hide_supermarket();
+}
+
+
+function hide_supermarket() {
+    var t = storesOverlay.transition().duration(1550),
+        g = t.selectAll(".circle");
+    g.selectAll("circle").attr("r", function(d) { return d.FOOD_TYPE == "Supermarkets and Other Grocery Stores" ? null : "none"; });
+}
+
+
+</script>
   </body>
 </html>
